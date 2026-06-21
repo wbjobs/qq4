@@ -20,8 +20,10 @@ def split_grid(grid, num_chunks):
 
 
 def worker(args):
-    chunk, alpha, dx, dy, dt, top_row, bottom_row = args
-    return step_explicit_chunk(chunk, alpha, dx, dy, dt, top_row, bottom_row)
+    chunk, alpha, dx, dy, dt, top_row, bottom_row, is_top, is_bottom, boundary_temp = args
+    return step_explicit_chunk(
+        chunk, alpha, dx, dy, dt, top_row, bottom_row, is_top, is_bottom, boundary_temp
+    )
 
 
 def parallel_step(grid, alpha, dx, dy, dt, num_processes, boundary_temp):
@@ -38,7 +40,14 @@ def parallel_step(grid, alpha, dx, dy, dt, num_processes, boundary_temp):
         chunk = chunks[i]
         top_row = None if i == 0 else grid[row_indices[i - 1][1] - 1, :].copy()
         bottom_row = None if i == num_chunks - 1 else grid[row_indices[i + 1][0], :].copy()
-        args_list.append((chunk, alpha, dx, dy, dt, top_row, bottom_row))
+        is_top_boundary = (i == 0)
+        is_bottom_boundary = (i == num_chunks - 1)
+        args_list.append((
+            chunk, alpha, dx, dy, dt,
+            top_row, bottom_row,
+            is_top_boundary, is_bottom_boundary,
+            boundary_temp
+        ))
 
     with mp.Pool(processes=num_processes) as pool:
         new_chunks = pool.map(worker, args_list)
