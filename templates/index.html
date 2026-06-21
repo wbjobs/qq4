@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二维热传导方程仿真</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 二维热传导方程仿真系统</h1>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="canvas-container">
+                    <canvas id="heatCanvas" width="500" height="500"></canvas>
+                    <div class="canvas-overlay" id="canvasOverlay">
+                        <span id="cursorInfo">坐标: --</span>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                        <span class="progress-text" id="progressText">0%</span>
+                    </div>
+                    <div class="info-row">
+                        <span>仿真时间: <b id="simTime">0.00</b> / <span id="totalTime">50.0</span>s</span>
+                        <span>步数: <b id="stepCount">0</b></span>
+                        <span>ETA: <b id="etaTime">--</b>s</span>
+                    </div>
+                    <div class="info-row">
+                        <span>状态: <b id="statusText" class="status-idle">空闲</b></span>
+                        <span>最高温度: <b id="maxTemp">--</b>°C</span>
+                        <span>dt: <b id="dtValue">--</b>s</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="control-section">
+                    <h3>控制面板</h3>
+                    <div class="btn-group">
+                        <button id="btnStart" class="btn btn-primary">▶ 开始</button>
+                        <button id="btnPause" class="btn btn-warning" disabled>⏸ 暂停</button>
+                        <button id="btnReset" class="btn btn-danger">↺ 重置</button>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>交互工具</h3>
+                    <div class="tool-buttons">
+                        <button id="toolSource" class="btn btn-tool active" data-tool="source">
+                            🔥 添加热源
+                        </button>
+                        <button id="toolProbe" class="btn btn-tool" data-tool="probe">
+                            📍 温度探针
+                        </button>
+                    </div>
+                    <div class="source-config">
+                        <label>热源温度 (°C):</label>
+                        <input type="number" id="sourceTemp" value="100" min="0" max="500">
+                        <label>热源半径 (格):</label>
+                        <input type="number" id="sourceRadius" value="3" min="1" max="20">
+                    </div>
+                    <button id="btnClearSources" class="btn btn-secondary btn-sm">清除所有热源</button>
+                    <button id="btnClearProbes" class="btn btn-secondary btn-sm">清除所有探针</button>
+                </div>
+
+                <div class="probe-section">
+                    <h3>温度探针</h3>
+                    <div id="probeList" class="probe-list">
+                        <p class="empty-hint">点击画布添加探针...</p>
+                    </div>
+                </div>
+
+                <div class="chart-section">
+                    <h3>温度-时间曲线</h3>
+                    <canvas id="chartCanvas" width="350" height="200"></canvas>
+                    <div id="chartLegend" class="chart-legend"></div>
+                </div>
+
+                <div class="legend-section">
+                    <h3>温度图例</h3>
+                    <div class="color-bar">
+                        <div class="color-gradient"></div>
+                        <div class="color-labels">
+                            <span>0°C</span>
+                            <span>50°C</span>
+                            <span>100°C</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

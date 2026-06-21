@@ -110,3 +110,62 @@ def check_stability(alpha, dx, dy, dt):
     r_x = alpha * dt / dx ** 2
     r_y = alpha * dt / dy ** 2
     return (r_x + r_y) <= 0.5, r_x, r_y
+
+
+class HeatSource:
+    def __init__(self, x, y, temperature, radius=3):
+        self.x = int(x)
+        self.y = int(y)
+        self.temperature = float(temperature)
+        self.radius = int(radius)
+
+    def to_dict(self):
+        return {
+            'x': self.x,
+            'y': self.y,
+            'temperature': self.temperature,
+            'radius': self.radius
+        }
+
+    @classmethod
+    def from_dict(cls, d):
+        return cls(d['x'], d['y'], d['temperature'], d.get('radius', 3))
+
+
+def apply_heat_sources(grid, sources):
+    for src in sources:
+        y, x = np.ogrid[:grid.shape[0], :grid.shape[1]]
+        dist = np.sqrt((x - src.x) ** 2 + (y - src.y) ** 2)
+        mask = dist <= src.radius
+        grid[mask] = src.temperature
+    return grid
+
+
+class TemperatureProbe:
+    def __init__(self, probe_id, x, y):
+        self.id = probe_id
+        self.x = int(x)
+        self.y = int(y)
+        self.times = []
+        self.temperatures = []
+
+    def record(self, time, grid):
+        if 0 <= self.y < grid.shape[0] and 0 <= self.x < grid.shape[1]:
+            self.times.append(float(time))
+            self.temperatures.append(float(grid[self.y, self.x]))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'x': self.x,
+            'y': self.y,
+            'times': self.times,
+            'temperatures': self.temperatures
+        }
+
+
+def grid_to_image_data(grid, boundary_temp, initial_temp):
+    normalized = (grid - boundary_temp) / (initial_temp - boundary_temp + 1e-10)
+    normalized = np.clip(normalized, 0.0, 1.0)
+    return (normalized * 255).astype(np.uint8).tolist()
+
