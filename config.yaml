@@ -1,0 +1,11 @@
+alpha: 0.01
+grid_size: 100
+dx: 1.0
+dy: 1.0
+dt: 0.2
+total_time: 50.0
+visualize_interval: 10
+initial_radius: 15
+initial_temp: 100.0
+boundary_temp: 0.0
+num_processes: 4
